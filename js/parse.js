@@ -5,8 +5,8 @@ var dataset;
 var downOffset = -3400;
 //next button 推進
 
-
-
+var lval=0;
+var rval=10000; //10sec
 
 var options = {
 	series: {
@@ -17,7 +17,7 @@ var options = {
     },
     xaxis: {
     	show:true,
-			axisLabel:"Time(4ms per point)"
+		axisLabel:"Time(4ms per point)"
         //mode:"time",
         //tickSize: [1, "second"],
     },
@@ -53,6 +53,7 @@ $(function()
 	//parse csv file to json file
 	$('#submit-parse').click(function()
 	{
+		downOffset = -3400; //讓每次parse回歸
 		stepped = 0;
 		chunks = 0;
 		rows = 0;
@@ -178,6 +179,26 @@ function completeFn()
 
 	    $.plot($("#flot-placeholder"), dataset, options);
 	}
+
+	//next page
+		$("#nextPage").click(function () {
+			$.plot("#flot-placeholder", dataset, {
+				xaxis: {
+					show:true,
+					//autoScale: "none",
+					//mode: "time",
+					//minTickSize: [1, "month"],
+					min: lval,
+					max: rval,
+					//timeBase: "milliseconds"
+				},
+				yaxis: {
+					//show:false,
+				}
+			});
+			lval = rval;
+			rval = rval+10000;
+		});
 }
 
 
