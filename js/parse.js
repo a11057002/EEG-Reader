@@ -2,10 +2,9 @@ var totalPoint;
 var channelNum;
 var channel = new Array();
 var dataset;
-var downOffset = -950;
+var downOffset = -3450;
 //next button 推進
-var lval=0;
-var rval=1000;
+
 var options = {
 	series: {
         lines: {
@@ -14,24 +13,25 @@ var options = {
         }
     },
     xaxis: {
-    	show:false,
+    	show:true,
+			axisLabel:"Time(4ms per point)"
         //mode:"time",
         //tickSize: [1, "second"],
     },
     yaxis: {
-    	show:false, 
+    	show:false,
     	min:-1000,
-    	max:1000,
+    	max:3500,
         axisLabel: "Channel",
         axisLabelUseCanvas: true,
         axisLabelFontSizePixels: 12,
         axisLabelFontFamily: 'Verdana, Arial',
-        axisLabelPadding: 6
+        axisLabelPadding: 10
     },
-    legend: {        
+    legend: {
         labelBoxBorderColor: "#fff"
     },
-    grid: {                
+    grid: {
         backgroundColor: "#ffffff",
         tickColor: "#008040"
     },
@@ -68,7 +68,7 @@ $(function()
 		{
 
 			start = performance.now();
-			
+
 			$('#files').parse({
 				config: config,
 				before: function(file, inputElem)
@@ -89,14 +89,14 @@ $(function()
 		}
 	});
 
-	
+
 });
 function buildConfig()
 {
 	return {
-		
+
 		newline: getLineEnding(),
-		header: $('#header').prop('checked'),	
+		header: $('#header').prop('checked'),
 		encoding: $('#encoding').val(),
 		worker: $('#worker').prop('checked'),
 		complete: completeFn,
@@ -137,14 +137,14 @@ function completeFn()
 	console.log("Finished input (async). Time:", end-start, arguments);
 	console.log("Rows:", rows, "Stepped:", stepped, "Chunks:", chunks);
 	//test for csv
-	//console.log(arguments[0].data[0][0]); //title,intro 
+	//console.log(arguments[0].data[0][0]); //title,intro
 	//console.log(arguments[0].data[1][0]); //0.000
 	//console.log(arguments[0].data[1][1]); //4.000
 	//console.log(arguments[0].data[1][3]); //12.000
 	console.log(arguments[0].data);
 	console.log("channel: "+arguments[0].data.length); //-3後為channel數
 	console.log("total points: "+arguments[0].data[1].length);//toal points
-	
+
 
 	totalPoint = arguments[0].data[1].length;
 	channelNum = (arguments[0].data.length)-3;
@@ -157,7 +157,7 @@ function completeFn()
 			var temp = [arguments[0].data[1][j],arguments[0].data[i+2][j+1]-downOffset];
 			channel[i].push(temp);
 		}
-		downOffset += 50; //
+		downOffset += 150; //
 	}
 	plotSignal();
 
@@ -187,7 +187,3 @@ function getRandomColor() {
   if(color=='"#ffffff')getRandomColor();//不要是白色
   return color;
 }
-
-
-
-
