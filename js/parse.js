@@ -5,7 +5,7 @@ var dataset;
 var downOffset = -950;
 //next button 推進
 var lval=0;
-var rval=1000;
+var rval=10000; //10sec
 var options = {
 	series: {
         lines: {
@@ -50,6 +50,7 @@ $(function()
 	//parse csv file to json file
 	$('#submit-parse').click(function()
 	{
+		downOffset = -950; //讓每次parse回歸
 		stepped = 0;
 		chunks = 0;
 		rows = 0;
@@ -175,6 +176,26 @@ function completeFn()
 
 	    $.plot($("#flot-placeholder"), dataset, options);
 	}
+
+	//next page
+		$("#nextPage").click(function () {
+			$.plot("#flot-placeholder", dataset, {
+				xaxis: {
+					show:false,
+					//autoScale: "none",
+					//mode: "time",
+					//minTickSize: [1, "month"],
+					min: lval,
+					max: rval,
+					//timeBase: "milliseconds"
+				},
+				yaxis: {
+					//show:false,
+				}
+			});
+			lval = rval;
+			rval = rval+10000;
+		});
 }
 
 
