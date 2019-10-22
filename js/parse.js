@@ -2,8 +2,11 @@ var totalPoint;
 var channelNum;
 var channel = new Array();
 var dataset;
-var downOffset = -3450;
+var downOffset = -3400;
 //next button 推進
+
+
+
 
 var options = {
 	series: {
