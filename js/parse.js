@@ -1,5 +1,6 @@
 var totalPoint;
 var channelNum;
+var totalLengthOfGraph;
 var channel = new Array();
 var channelName = new Array();
 var dataset;
@@ -21,7 +22,7 @@ var options = {
 		axisLabel:"milliseconds(4ms per point)"
         //mode:"time",
         //tickSize: [1, "second"],
-        
+
     },
     yaxis: [
     {
@@ -67,44 +68,52 @@ $(function()
 	//parse csv file to json file
 	$('#submit-parse').click(function()
 	{
-		downOffset = -3400; //讓每次parse回歸
-		stepped = 0;
-		chunks = 0;
-		rows = 0;
+		Swal.fire({
+			title:"加速解析中:D",
+			showConfirmButton:false,
+			onBeforeOpen:()=>{
+				Swal.showLoading();
+				downOffset = -3400; //讓每次parse回歸
+				stepped = 0;
+				chunks = 0;
+				rows = 0;
 
-		var txt = $('#input').val();
-		//console.log("TEXT:"+txt);
-		var files = $('#files')[0].files;
-		//console.log("File:"+files);
-		var config = buildConfig();
+				var txt = $('#input').val();
+				//console.log("TEXT:"+txt);
+				var files = $('#files')[0].files;
+				//console.log("File:"+files);
+				var config = buildConfig();
 
-		pauseChecked = $('#step-pause').prop('checked');
-		printStepChecked = $('#print-steps').prop('checked');
+				pauseChecked = $('#step-pause').prop('checked');
+				printStepChecked = $('#print-steps').prop('checked');
 
 
-		if (files.length > 0)
-		{
-
-			start = performance.now();
-
-			$('#files').parse({
-				config: config,
-				before: function(file, inputElem)
+				if (files.length > 0)
 				{
-					console.log("Parsing file:", file);
-				},
-				complete: function()
-				{
-					console.log("Done with all files.");
+
+					start = performance.now();
+
+					$('#files').parse({
+						config: config,
+						before: function(file, inputElem)
+						{
+							console.log("Parsing file:", file);
+						},
+						complete: function()
+						{
+							console.log("Done with all files.");
+							Swal.close();
+						}
+					});
 				}
-			});
-		}
-		else
-		{
-			start = performance.now();
-			var results = Papa.parse(txt, config);
-			console.log("Synchronous parse results:", results);
-		}
+				else
+				{
+					start = performance.now();
+					var results = Papa.parse(txt, config);
+					console.log("Synchronous parse results:", results);
+				}
+			}
+		})
 	});
 
 
@@ -162,13 +171,13 @@ function completeFn()
 	console.log(arguments[0].data);
 	console.log("channel: "+arguments[0].data.length); //-3後為channel數
 	console.log("total points: "+arguments[0].data[1].length);//toal points
-
-
 	totalPoint = arguments[0].data[1].length;
+	totalLengthOfGraph = arguments[0].data[1][totalPoint-1];
 	channelNum = (arguments[0].data.length)-3;
 	//channel1
 	for(var i=0;i<channelNum;i++){
 		channel[i]=[]; //channel0~channel29
+		channelName[i] = [];
 	}
 	for(var i=0;i<channelNum;i++){
 		for(var j=0;j<totalPoint;j++){
@@ -178,8 +187,9 @@ function completeFn()
 		downOffset += 150; //
 	}
 	for(var i=0;i<channelNum;i++){
-		var temp1 = [0,arguments[0].data[i+2][0]]; //getChannel Name 
-		//channelName[i].push(temp1);
+		var temp1 = [arguments[0].data[i+2][0],0]; //getChannel Name
+		channelName[i].push(temp1);
+
 	}
 	console.log("channelName: "+channelName);
 	plotSignal();
@@ -194,7 +204,7 @@ function completeFn()
 	    //console.log("dataset: "+ dataset);
 
 	    for(var i=0 ;i<channelNum;i++)
-	    	dataset.push({ data: channel[i], color: getRandomColor() },{data:channelName[i], yaxis:2});
+	    	dataset.push({ data: channel[i], color: getRandomColor()},{data:channelName[i],yaxis:2});
 
 	    $.plot($("#flot-placeholder"), dataset, options);
 	    notFirst=1;
@@ -202,14 +212,19 @@ function completeFn()
 
 	//next page
 		$("#nextPage").click(function () {
+			if(rval<totalLengthOfGraph)
+			{
+				rval+=10000;
+				lval+=10000;
+			}
 			$.plot("#flot-placeholder", dataset, {
 				xaxis: {
 					show:true,
 					//autoScale: "none",
 					//mode: "time",
 					//minTickSize: [1, "month"],
-					min: lval+=10000,
-					max: rval+=10000,
+					min: lval,
+					max: rval
 					//timeBase: "milliseconds"
 				},
 				yaxis: {
@@ -222,15 +237,20 @@ function completeFn()
 			}*/
 		});
 	//back page
-		$("#backPage").click(function () {
+		$("#previousPage").click(function () {
+			if(lval>0)
+			{
+				lval -=10000;
+				rval -=10000;
+			}
 			$.plot("#flot-placeholder", dataset, {
 				xaxis: {
 					show:true,
 					//autoScale: "none",
 					//mode: "time",
 					//minTickSize: [1, "month"],
-					min: lval-=10000,
-					max: rval-=10000,
+					min: lval,
+					max: rval
 					//timeBase: "milliseconds"
 				},
 				yaxis: {
