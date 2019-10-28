@@ -23,7 +23,7 @@ var options = {
         //tickSize: [1, "second"],
         
     },
-    yaxis: [
+    yaxis:
     {
     	show:true,
     	min:-1000,
@@ -34,13 +34,6 @@ var options = {
         axisLabelFontFamily: 'Verdana, Arial',
         axisLabelPadding: 10,
     },
-    {
-    	position:"right",
-    	tickFormatter:function(v){
-    		return v.toString();
-    	},
-    }
-    ],
     legend: {
         labelBoxBorderColor: "#fff"
     },
@@ -169,6 +162,7 @@ function completeFn()
 	//channel1
 	for(var i=0;i<channelNum;i++){
 		channel[i]=[]; //channel0~channel29
+		channelName[i]=[];//initialize channelname array
 	}
 	for(var i=0;i<channelNum;i++){
 		for(var j=0;j<totalPoint;j++){
@@ -177,9 +171,12 @@ function completeFn()
 		}
 		downOffset += 150; //
 	}
+	//console.log("channel: "+channel);
+
 	for(var i=0;i<channelNum;i++){
-		var temp1 = [0,arguments[0].data[i+2][0]]; //getChannel Name 
-		//channelName[i].push(temp1);
+		var temp1 = arguments[0].data[i+2][0]; //getChannel Name 
+		channelName[i].push(temp1);
+		//channelName[i] = [0,arguments[0].data[i+2][0]];
 	}
 	console.log("channelName: "+channelName);
 	plotSignal();
@@ -194,11 +191,10 @@ function completeFn()
 	    //console.log("dataset: "+ dataset);
 
 	    for(var i=0 ;i<channelNum;i++)
-	    	dataset.push({ data: channel[i], color: getRandomColor() },{data:channelName[i], yaxis:2});
-
-	    $.plot($("#flot-placeholder"), dataset, options);
-	    notFirst=1;
-	}
+	    	dataset.push({ data: channel[i], color: getRandomColor()});
+	    //console.log("DataSet:"+dataset);
+	    $.plot($("#flot-placeholder"), dataset, options);	
+	    }
 
 	//next page
 		$("#nextPage").click(function () {
@@ -222,7 +218,7 @@ function completeFn()
 			}*/
 		});
 	//back page
-		$("#backPage").click(function () {
+		$("#previousPage").click(function () {
 			$.plot("#flot-placeholder", dataset, {
 				xaxis: {
 					show:true,
