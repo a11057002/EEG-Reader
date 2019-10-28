@@ -1,6 +1,7 @@
 var totalPoint;
 var channelNum;
 var channel = new Array();
+var channelName = new Array();
 var dataset;
 var downOffset = -3400;
 //next button 推進
@@ -17,20 +18,29 @@ var options = {
     },
     xaxis: {
     	show:true,
-		axisLabel:"Time(4ms per point)"
+		axisLabel:"milliseconds(4ms per point)"
         //mode:"time",
         //tickSize: [1, "second"],
+        
     },
-    yaxis: {
-    	show:false,
+    yaxis: [
+    {
+    	show:true,
     	min:-1000,
     	max:3500,
         axisLabel: "Channel",
         axisLabelUseCanvas: true,
         axisLabelFontSizePixels: 12,
         axisLabelFontFamily: 'Verdana, Arial',
-        axisLabelPadding: 10
+        axisLabelPadding: 10,
     },
+    {
+    	position:"right",
+    	tickFormatter:function(v){
+    		return v.toString();
+    	},
+    }
+    ],
     legend: {
         labelBoxBorderColor: "#fff"
     },
@@ -45,6 +55,10 @@ var options = {
 			interactive: true
 		}*/
 };
+
+$( document ).ready(function() { //initial plot area
+    $.plot($("#flot-placeholder"), [], []);
+});
 
 
 $(function()
@@ -163,6 +177,11 @@ function completeFn()
 		}
 		downOffset += 150; //
 	}
+	for(var i=0;i<channelNum;i++){
+		var temp1 = [0,arguments[0].data[i+2][0]]; //getChannel Name 
+		//channelName[i].push(temp1);
+	}
+	console.log("channelName: "+channelName);
 	plotSignal();
 
 
@@ -175,9 +194,10 @@ function completeFn()
 	    //console.log("dataset: "+ dataset);
 
 	    for(var i=0 ;i<channelNum;i++)
-	    	dataset.push({ data: channel[i], color: getRandomColor() });
+	    	dataset.push({ data: channel[i], color: getRandomColor() },{data:channelName[i], yaxis:2});
 
 	    $.plot($("#flot-placeholder"), dataset, options);
+	    notFirst=1;
 	}
 
 	//next page
@@ -188,16 +208,35 @@ function completeFn()
 					//autoScale: "none",
 					//mode: "time",
 					//minTickSize: [1, "month"],
-					min: lval,
-					max: rval,
+					min: lval+=10000,
+					max: rval+=10000,
 					//timeBase: "milliseconds"
 				},
 				yaxis: {
 					//show:false,
 				}
 			});
-			lval = rval;
-			rval = rval+10000;
+		/*	if(rval!=((totalPoint*4)+10000)){//totalPoint*4: time upper bound,加10000給他足夠顯示空間
+				lval = rval;
+				rval = rval+10000;
+			}*/
+		});
+	//back page
+		$("#backPage").click(function () {
+			$.plot("#flot-placeholder", dataset, {
+				xaxis: {
+					show:true,
+					//autoScale: "none",
+					//mode: "time",
+					//minTickSize: [1, "month"],
+					min: lval-=10000,
+					max: rval-=10000,
+					//timeBase: "milliseconds"
+				},
+				yaxis: {
+					//show:false,
+				}
+			});
 		});
 }
 
