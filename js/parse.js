@@ -208,7 +208,7 @@ function completeFn()
 	    	dataset.push({ data: channel[i], color: getRandomColor()});
 
 	    $.plot($("#flot-placeholder"), dataset, options);
-	    notFirst=1;
+	 
 	}
 
 	//next page
