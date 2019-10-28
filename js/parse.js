@@ -21,27 +21,28 @@ var options = {
     	show:true,
 		axisLabel:"milliseconds(4ms per point)"
         //mode:"time",
-        //tickSize: [1, "second"],
-
+        //tickSize: [1, "second"],// XXX:
     },
-    yaxis: [
+    yaxis:[
     {
+			position:"left",
     	show:true,
     	min:-1000,
     	max:3500,
-        axisLabel: "Channel",
-        axisLabelUseCanvas: true,
-        axisLabelFontSizePixels: 12,
-        axisLabelFontFamily: 'Verdana, Arial',
-        axisLabelPadding: 10,
-    },
-    {
-    	position:"right",
-    	tickFormatter:function(v){
-    		return v.toString();
-    	},
-    }
-    ],
+      axisLabel: "Channel",
+      axisLabelUseCanvas: true,
+      axisLabelFontSizePixels: 12,
+      axisLabelFontFamily: 'Verdana, Arial',
+      axisLabelPadding: 10
+
+    }],
+    // {
+    // 	position:"left",
+    // 	tickFormatter:function(v){
+    // 		return v.toString();
+    // 	},
+    // }
+
     legend: {
         labelBoxBorderColor: "#fff"
     },
@@ -57,9 +58,9 @@ var options = {
 		}*/
 };
 
-$( document ).ready(function() { //initial plot area
-    $.plot($("#flot-placeholder"), [], []);
-});
+//$( document ).ready(function() { //initial plot area
+//    $.plot($("#flot-placeholder"), [], []);
+//});
 
 
 $(function()
@@ -203,8 +204,8 @@ function completeFn()
 	    dataset = [];
 	    //console.log("dataset: "+ dataset);
 
-	    for(var i=0 ;i<channelNum;i++)
-	    	dataset.push({ data: channel[i], color: getRandomColor()},{data:channelName[i],yaxis:2});
+	    for(var i=0 ;i<2;i++)
+	    	dataset.push({ data: channel[i], color: getRandomColor()});
 
 	    $.plot($("#flot-placeholder"), dataset, options);
 	    notFirst=1;
