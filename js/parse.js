@@ -23,9 +23,8 @@ var options = {
         //mode:"time",
         //tickSize: [1, "second"],// XXX:
     },
-    yaxis:[
-    {
-			position:"left",
+    yaxis:[{
+		position:"left",
     	show:true,
     	min:-1000,
     	max:3500,
@@ -58,9 +57,9 @@ var options = {
 		}*/
 };
 
-//$( document ).ready(function() { //initial plot area
-//    $.plot($("#flot-placeholder"), [], []);
-//});
+$( document ).ready(function() { //initial plot area
+    $.plot($("#flot-placeholder"), [], []);
+});
 
 
 $(function()
@@ -175,6 +174,8 @@ function completeFn()
 	totalPoint = arguments[0].data[1].length;
 	totalLengthOfGraph = arguments[0].data[1][totalPoint-1];
 	channelNum = (arguments[0].data.length)-3;
+	//console.log("TTT:"+totalPoint);
+	//console.log("YYY:"+totalLengthOfGraph);
 	//channel1
 	for(var i=0;i<channelNum;i++){
 		channel[i]=[]; //channel0~channel29
@@ -241,8 +242,8 @@ function completeFn()
 		$("#previousPage").click(function () {
 			if(lval>0)
 			{
-				lval -=10000;
-				rval -=10000;
+				lval-=10000;
+				rval-=10000;
 			}
 			$.plot("#flot-placeholder", dataset, {
 				xaxis: {
