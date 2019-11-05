@@ -1,10 +1,14 @@
 var totalPoint;
 var channelNum;
 var totalLengthOfGraph;
-var channel = new Array();
-var channelName = new Array();
+var channel;
+var channelName;
+var channelRealtime;//
+var r=0;//
+var dataset2;
 var dataset;
 var downOffset = -3400;
+var scale;
 var interval_time = 10000;
 var lval;
 var rval;
@@ -60,6 +64,46 @@ var options = {
 
 $( document ).ready(function() { //initial plot area
     $.plot($("#flot-placeholder"), [], []);
+    	//next page
+		$("#nextPage").click(function () {
+			if(rval<totalLengthOfGraph)
+			{
+				$.plot("#flot-placeholder", dataset, {
+					xaxis: {
+						show:true,
+						//autoScale: "none",
+						//mode: "time",
+						//minTickSize: [1, "month"],
+						min: lval+=interval_time,
+						max: rval+=interval_time
+						//timeBase: "milliseconds"
+					},
+					yaxis: {
+						//show:false,
+					}
+				});
+			}
+		});
+	//back page
+		$("#previousPage").click(function () {
+			if(lval>0)
+			{
+				$.plot("#flot-placeholder", dataset, {
+					xaxis: {
+						show:true,
+						//autoScale: "none",
+						//mode: "time",
+						//minTickSize: [1, "month"],
+						min: lval-=interval_time,
+						max: rval-=interval_time
+						//timeBase: "milliseconds"
+					},
+					yaxis: {
+						//show:false,
+					}
+				});
+			}
+		});
 });
 
 
@@ -67,7 +111,11 @@ $(function()
 {
 	//parse csv file to json file
 	$('#submit-parse').click(function()
-	{
+	{   
+		channel = new Array();
+		channelName = new Array();
+		channelRealtime = new Array();
+
 		Swal.mixin({ //使用者自設定interval_time and downOffset
 			  input: 'number',
 			  confirmButtonText: 'Next &rarr;',
@@ -81,36 +129,37 @@ $(function()
 			    inputValue: 10000
 			  },
 			  {
-			  	title: 'set downOffset',
-			    text: 'default -3400',
+			  	title: 'set scale',
+			    text: 'default 150',
 			    //inputPlaceholder: "input number"
-			    inputValue: -3400
+			    inputValue: 150
 			  }
 			  
 			]).then((result) => {
 			  	console.log(result.value);
 			  	interval_time = result.value[0];
-			  	downOffset = result.value[1];
+			  	scale = result.value[1];
 			  	interval_time = parseInt(interval_time,10);
-			  	downOffset = parseInt(downOffset,10);
+			  	scale = parseInt(scale,10);
 			}).then(()=>{
 				Swal.fire({
 					title:"加速解析中:D",
-			      text: "Input interval_time: " + interval_time +
-				  		" Input downOffset: " + downOffset,
+			      html: "Input interval_time: " + interval_time +
+				  		"<br> Input scale: " + scale,
 			      confirmButtonText: 'complete!',
 					showConfirmButton:false,
 					onBeforeOpen:()=>{
 						Swal.showLoading();
-						//downOffset = -3400; //讓每次parse回歸
+						downOffset = -3400; //讓每次parse回歸
 						stepped = 0;
 						chunks = 0;
 						rows = 0;
 
 						var txt = $('#input').val();
 						//console.log("TEXT:"+txt);
+						files.length=0;						
 						files = $('#files')[0].files;
-						//console.log("File:"+files);
+						console.log("File:"+files);
 						var config = buildConfig();
 
 						pauseChecked = $('#step-pause').prop('checked');
@@ -217,13 +266,29 @@ function completeFn()
 			var temp = [arguments[0].data[1][j],arguments[0].data[i+2][j+1]-downOffset];
 			channel[i].push(temp);
 		}
-		downOffset += 150; //
+		downOffset += scale; //
 	}
 	for(var i=0;i<channelNum;i++){
 		var temp1 = [arguments[0].data[i+2][0],0]; //getChannel Name
 		channelName[i].push(temp1);
 
 	}
+
+	/*
+	real time
+	*/
+	for(var j=0;j<totalPoint;j++){
+		channelRealtime[j] = [];
+	}
+	for(var j=0;j<totalPoint;j++){
+		for(var i=0;i<channelNum;i++){
+			var temp2 = [arguments[0].data[1][j],arguments[0].data[i+2][j+1]-downOffset];
+			channelRealtime[j].push(temp2);
+			downOffset += scale;
+		}
+		downOffset = -3400;
+	}//end
+
 	console.log("channelName: "+channelName);
 	plotSignal();
 
@@ -244,48 +309,25 @@ function completeFn()
 	    $.plot($("#flot-placeholder"), dataset, options);
 	 
 	}
-
-	//next page
-		$("#nextPage").click(function () {
-			if(rval<totalLengthOfGraph)
-			{
-				$.plot("#flot-placeholder", dataset, {
-					xaxis: {
-						show:true,
-						//autoScale: "none",
-						//mode: "time",
-						//minTickSize: [1, "month"],
-						min: lval+=interval_time,
-						max: rval+=interval_time
-						//timeBase: "milliseconds"
-					},
-					yaxis: {
-						//show:false,
-					}
-				});
-			}
-		});
-	//back page
-		$("#previousPage").click(function () {
-			if(lval>0)
-			{
-				$.plot("#flot-placeholder", dataset, {
-					xaxis: {
-						show:true,
-						//autoScale: "none",
-						//mode: "time",
-						//minTickSize: [1, "month"],
-						min: lval-=interval_time,
-						max: rval-=interval_time
-						//timeBase: "milliseconds"
-					},
-					yaxis: {
-						//show:false,
-					}
-				});
-			}
-		});
-
+/*
+	dataset2=[];
+	//for(var j=0 ;j<totalPoint;j++) 
+	 //   	dataset2.push({ data: channelRealtime[j], color: getRandomColor()});
+	var plot = $.plot($("#flot-placeholder2"), dataset2, options);
+	function realTime(){
+		
+		var updateInterval = 30;
+		
+		if(r <= totalPoint){
+			plot.setData(channelRealtime[r]);
+			plot.draw();
+			r++;
+		}
+		setTimeout(realTime, updateInterval);
+		
+		
+	}
+	realTime();*/
 
 }
 
