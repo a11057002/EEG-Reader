@@ -5,10 +5,11 @@ var channel = new Array();
 var channelName = new Array();
 var dataset;
 var downOffset = -3400;
-//next button 推進
+var interval_time = 10000;
+var lval;
+var rval;
 
-var lval=0;
-var rval=10000; //10sec
+
 
 var options = {
 	series: {
@@ -64,56 +65,86 @@ $( document ).ready(function() { //initial plot area
 
 $(function()
 {
-
 	//parse csv file to json file
 	$('#submit-parse').click(function()
 	{
-		Swal.fire({
-			title:"加速解析中:D",
-			showConfirmButton:false,
-			onBeforeOpen:()=>{
-				Swal.showLoading();
-				downOffset = -3400; //讓每次parse回歸
-				stepped = 0;
-				chunks = 0;
-				rows = 0;
+		Swal.mixin({ //使用者自設定interval_time and downOffset
+			  input: 'number',
+			  confirmButtonText: 'Next &rarr;',
+			  showCancelButton: true,
+			  progressSteps: ['1', '2']
+			}).queue([
+			  {
+			    title: 'set Interval time',
+			    text: 'default 10000ms',
+			    //inputPlaceholder: "input number(ms)"
+			    inputValue: 10000
+			  },
+			  {
+			  	title: 'set downOffset',
+			    text: 'default -3400',
+			    //inputPlaceholder: "input number"
+			    inputValue: -3400
+			  }
+			  
+			]).then((result) => {
+			  	console.log(result.value);
+			  	interval_time = result.value[0];
+			  	downOffset = result.value[1];
+			  	interval_time = parseInt(interval_time,10);
+			  	downOffset = parseInt(downOffset,10);
+			}).then(()=>{
+				Swal.fire({
+					title:"加速解析中:D",
+			      text: "Input interval_time: " + interval_time +
+				  		" Input downOffset: " + downOffset,
+			      confirmButtonText: 'complete!',
+					showConfirmButton:false,
+					onBeforeOpen:()=>{
+						Swal.showLoading();
+						//downOffset = -3400; //讓每次parse回歸
+						stepped = 0;
+						chunks = 0;
+						rows = 0;
 
-				var txt = $('#input').val();
-				//console.log("TEXT:"+txt);
-				var files = $('#files')[0].files;
-				//console.log("File:"+files);
-				var config = buildConfig();
+						var txt = $('#input').val();
+						//console.log("TEXT:"+txt);
+						files = $('#files')[0].files;
+						//console.log("File:"+files);
+						var config = buildConfig();
 
-				pauseChecked = $('#step-pause').prop('checked');
-				printStepChecked = $('#print-steps').prop('checked');
+						pauseChecked = $('#step-pause').prop('checked');
+						printStepChecked = $('#print-steps').prop('checked');
 
 
-				if (files.length > 0)
-				{
-
-					start = performance.now();
-
-					$('#files').parse({
-						config: config,
-						before: function(file, inputElem)
+						if (files.length > 0)
 						{
-							console.log("Parsing file:", file);
-						},
-						complete: function()
-						{
-							console.log("Done with all files.");
-							Swal.close();
+
+							start = performance.now();
+
+							$('#files').parse({
+								config: config,
+								before: function(file, inputElem)
+								{
+									console.log("Parsing file:", file);
+								},
+								complete: function()
+								{
+									console.log("Done with all files.");
+									Swal.close();
+								}
+							});
 						}
-					});
-				}
-				else
-				{
-					start = performance.now();
-					var results = Papa.parse(txt, config);
-					console.log("Synchronous parse results:", results);
-				}
-			}
-		})
+						else
+						{
+							start = performance.now();
+							results = Papa.parse(txt, config);
+							console.log("Synchronous parse results:", results);
+						}
+					}
+				})
+			})
+	
 	});
 
 
@@ -201,11 +232,13 @@ function completeFn()
 
 
 	function plotSignal() {
+		lval = 0;
+		rval = interval_time;
 
 	    dataset = [];
 	    //console.log("dataset: "+ dataset);
 
-	    for(var i=0 ;i<2;i++)
+	    for(var i=0 ;i<2;i++) //<channelNum
 	    	dataset.push({ data: channel[i], color: getRandomColor()});
 
 	    $.plot($("#flot-placeholder"), dataset, options);
@@ -216,50 +249,44 @@ function completeFn()
 		$("#nextPage").click(function () {
 			if(rval<totalLengthOfGraph)
 			{
-				rval+=10000;
-				lval+=10000;
+				$.plot("#flot-placeholder", dataset, {
+					xaxis: {
+						show:true,
+						//autoScale: "none",
+						//mode: "time",
+						//minTickSize: [1, "month"],
+						min: lval+=interval_time,
+						max: rval+=interval_time
+						//timeBase: "milliseconds"
+					},
+					yaxis: {
+						//show:false,
+					}
+				});
 			}
-			$.plot("#flot-placeholder", dataset, {
-				xaxis: {
-					show:true,
-					//autoScale: "none",
-					//mode: "time",
-					//minTickSize: [1, "month"],
-					min: lval,
-					max: rval
-					//timeBase: "milliseconds"
-				},
-				yaxis: {
-					//show:false,
-				}
-			});
-		/*	if(rval!=((totalPoint*4)+10000)){//totalPoint*4: time upper bound,加10000給他足夠顯示空間
-				lval = rval;
-				rval = rval+10000;
-			}*/
 		});
 	//back page
 		$("#previousPage").click(function () {
 			if(lval>0)
 			{
-				lval-=10000;
-				rval-=10000;
+				$.plot("#flot-placeholder", dataset, {
+					xaxis: {
+						show:true,
+						//autoScale: "none",
+						//mode: "time",
+						//minTickSize: [1, "month"],
+						min: lval-=interval_time,
+						max: rval-=interval_time
+						//timeBase: "milliseconds"
+					},
+					yaxis: {
+						//show:false,
+					}
+				});
 			}
-			$.plot("#flot-placeholder", dataset, {
-				xaxis: {
-					show:true,
-					//autoScale: "none",
-					//mode: "time",
-					//minTickSize: [1, "month"],
-					min: lval,
-					max: rval
-					//timeBase: "milliseconds"
-				},
-				yaxis: {
-					//show:false,
-				}
-			});
 		});
+
+
 }
 
 
