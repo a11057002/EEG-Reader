@@ -13,33 +13,36 @@ var interval_time = 10000;
 var lval;
 var rval;
 
-
-
 var options = {
-	series: {
-        lines: {
-            show: true,
-            lineWidth: 1.2,
-        }
-    },
-    xaxis: {
+	series:
+	{
+	    lines:
+			{
+	        show: true,
+	        lineWidth: 1.2,
+	    }
+  },
+  xaxis:
+	{
+	    show:true,
+			mode:"time",
+			axisLabel:"seconds",
+			// max:60000
+			max:1000
+      //mode:"time",
+      //tickSize: [1, "second"],// XXX:
+  },
+  yaxis:
+	{
+			position:"left",
     	show:true,
-		axisLabel:"milliseconds(4ms per point)"
-        //mode:"time",
-        //tickSize: [1, "second"],// XXX:
-    },
-    yaxis:[{
-		position:"left",
-    	show:true,
-    	min:-1000,
-    	max:3500,
-      axisLabel: "Channel",
-      axisLabelUseCanvas: true,
-      axisLabelFontSizePixels: 12,
-      axisLabelFontFamily: 'Verdana, Arial',
-      axisLabelPadding: 10
-
-    }],
+      // axisLabelUseCanvas: true,
+      // axisLabelFontSizePixels: 12,
+      // axisLabelFontFamily: 'Verdana, Arial',
+      // axisLabelPadding: 10,
+			ticks:channelName
+	}
+  ,
     // {
     // 	position:"left",
     // 	tickFormatter:function(v){
@@ -48,7 +51,8 @@ var options = {
     // }
 
     legend: {
-        labelBoxBorderColor: "#fff"
+        labelBoxBorderColor: "#fff",
+				position:"sw"
     },
     grid: {
         backgroundColor: "#ffffff",
@@ -64,46 +68,58 @@ var options = {
 
 $( document ).ready(function() { //initial plot area
     $.plot($("#flot-placeholder"), [], []);
-    	//next page
-		$("#nextPage").click(function () {
-			if(rval<totalLengthOfGraph)
-			{
-				$.plot("#flot-placeholder", dataset, {
-					xaxis: {
-						show:true,
-						//autoScale: "none",
-						//mode: "time",
-						//minTickSize: [1, "month"],
-						min: lval+=interval_time,
-						max: rval+=interval_time
-						//timeBase: "milliseconds"
-					},
-					yaxis: {
-						//show:false,
-					}
-				});
-			}
-		});
-	//back page
-		$("#previousPage").click(function () {
-			if(lval>0)
-			{
-				$.plot("#flot-placeholder", dataset, {
-					xaxis: {
-						show:true,
-						//autoScale: "none",
-						//mode: "time",
-						//minTickSize: [1, "month"],
-						min: lval-=interval_time,
-						max: rval-=interval_time
-						//timeBase: "milliseconds"
-					},
-					yaxis: {
-						//show:false,
-					}
-				});
-			}
-		});
+		//next page
+			$("#nextPage").click(function () {
+				console.log("yeee");
+				if(rval<totalLengthOfGraph)
+				{
+					$.plot("#flot-placeholder", dataset, {
+						xaxis: {
+							show:true,
+							//autoScale: "none",
+							//mode: "time",
+							//minTickSize: [1, "month"],
+							min: lval+=interval_time,
+							max: rval+=interval_time
+							//timeBase: "milliseconds"
+						},
+						yaxis: {
+							ticks:channelName
+							//show:false,
+						}
+					});
+				}
+			});
+		//back page
+			$("#previousPage").click(function () {
+				if(lval>0)
+				{
+					$.plot("#flot-placeholder", dataset, {
+						xaxis: {
+							show:true,
+							//autoScale: "none",
+							//mode: "time",
+							//minTickSize: [1, "month"],
+							min: lval-=interval_time,
+							max: rval-=interval_time
+							//timeBase: "milliseconds"
+						},
+						yaxis: {
+							ticks:channelName
+							//show:false,
+						}
+					});
+				}
+			});
+
+			// $("#zoomIn").click(function(){
+			// 	 $("#flot-placeholder").zoom();
+			// })
+			//
+			// $("#zoomOut").click(function(){
+			// 	 $("#flot-placeholder").zoomOut();
+			// })
+
 });
 
 
@@ -134,7 +150,7 @@ $(function()
 			    //inputPlaceholder: "input number"
 			    inputValue: 150
 			  }
-			  
+
 			]).then((result) => {
 			  	console.log(result.value);
 			  	interval_time = result.value[0];
@@ -193,7 +209,7 @@ $(function()
 					}
 				})
 			})
-	
+
 	});
 
 
@@ -266,6 +282,9 @@ function completeFn()
 			var temp = [arguments[0].data[1][j],arguments[0].data[i+2][j+1]-downOffset];
 			channel[i].push(temp);
 		}
+		temp1 = [-downOffset,arguments[0].data[i+2][0]];
+		channelName.push(temp1);
+
 		downOffset += scale; //
 	}
 	for(var i=0;i<channelNum;i++){
@@ -304,9 +323,10 @@ function completeFn()
 	    //console.log("dataset: "+ dataset);
 
 	    for(var i=0 ;i<2;i++) //<channelNum
-	    	dataset.push({ data: channel[i], color: getRandomColor()});
+	    	dataset.push({ data: channel[i],color: getRandomColor()});
 
 	    $.plot($("#flot-placeholder"), dataset, options);
+
 	 
 	}
 /*
@@ -329,7 +349,10 @@ function completeFn()
 	}
 	realTime();*/
 
+
 }
+
+
 
 
 function getRandomColor() {
