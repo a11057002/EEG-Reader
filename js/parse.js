@@ -28,7 +28,7 @@ var options = {
 			mode:"time",
 			axisLabel:"seconds",
 			// max:60000
-			max:1000
+			//max:1000
       //mode:"time",
       //tickSize: [1, "second"],// XXX:
   },
@@ -322,7 +322,7 @@ function completeFn()
 	    dataset = [];
 	    //console.log("dataset: "+ dataset);
 
-	    for(var i=0 ;i<2;i++) //<channelNum
+	    for(var i=0 ;i<channelNum;i++) //<channelNum
 	    	dataset.push({ data: channel[i],color: getRandomColor()});
 
 	    $.plot($("#flot-placeholder"), dataset, options);
