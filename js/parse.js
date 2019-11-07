@@ -8,69 +8,17 @@ var r=0;//
 var dataset2;
 var dataset;
 var downOffset = -3400;
-var scale;
+var offset;
 var interval_time = 10000;
 var lval;
 var rval;
 
-var options = {
-	series:
-	{
-	    lines:
-			{
-	        show: true,
-	        lineWidth: 1.2,
-	    }
-  },
-  xaxis:
-	{
-	    show:true,
-			mode:"time",
-			axisLabel:"seconds",
-			// max:60000
-			//max:1000
-      //mode:"time",
-      //tickSize: [1, "second"],// XXX:
-  },
-  yaxis:
-	{
-			position:"left",
-    	show:true,
-      // axisLabelUseCanvas: true,
-      // axisLabelFontSizePixels: 12,
-      // axisLabelFontFamily: 'Verdana, Arial',
-      // axisLabelPadding: 10,
-			ticks:channelName
-	}
-  ,
-    // {
-    // 	position:"left",
-    // 	tickFormatter:function(v){
-    // 		return v.toString();
-    // 	},
-    // }
-
-    legend: {
-        labelBoxBorderColor: "#fff",
-				position:"sw"
-    },
-    grid: {
-        backgroundColor: "#ffffff",
-        tickColor: "#008040"
-    },
-    /*	zoom: {
-			interactive: true
-		},
-		pan: {
-			interactive: true
-		}*/
-};
+var options;
 
 $( document ).ready(function() { //initial plot area
     $.plot($("#flot-placeholder"), [], []);
 		//next page
 			$("#nextPage").click(function () {
-				console.log("yeee");
 				if(rval<totalLengthOfGraph)
 				{
 					$.plot("#flot-placeholder", dataset, {
@@ -145,7 +93,7 @@ $(function()
 			    inputValue: 10000
 			  },
 			  {
-			  	title: 'set scale',
+			  	title: 'set offset',
 			    text: 'default 150',
 			    //inputPlaceholder: "input number"
 			    inputValue: 150
@@ -154,14 +102,14 @@ $(function()
 			]).then((result) => {
 			  	console.log(result.value);
 			  	interval_time = result.value[0];
-			  	scale = result.value[1];
+			  	offset = result.value[1];
 			  	interval_time = parseInt(interval_time,10);
-			  	scale = parseInt(scale,10);
+			  	offset = parseInt(offset,10);
 			}).then(()=>{
 				Swal.fire({
 					title:"加速解析中:D",
 			      html: "Input interval_time: " + interval_time +
-				  		"<br> Input scale: " + scale,
+				  		"<br> Input offset: " + offset,
 			      confirmButtonText: 'complete!',
 					showConfirmButton:false,
 					onBeforeOpen:()=>{
@@ -282,16 +230,12 @@ function completeFn()
 			var temp = [arguments[0].data[1][j],arguments[0].data[i+2][j+1]-downOffset];
 			channel[i].push(temp);
 		}
-		temp1 = [-downOffset,arguments[0].data[i+2][0]];
+		var temp1 = [-downOffset,arguments[0].data[i+2][0]];//getChannel Name
 		channelName.push(temp1);
 
-		downOffset += scale; //
+		downOffset += offset; //
 	}
-	for(var i=0;i<channelNum;i++){
-		var temp1 = [arguments[0].data[i+2][0],0]; //getChannel Name
-		channelName[i].push(temp1);
 
-	}
 
 	/*
 	real time
@@ -303,17 +247,70 @@ function completeFn()
 		for(var i=0;i<channelNum;i++){
 			var temp2 = [arguments[0].data[1][j],arguments[0].data[i+2][j+1]-downOffset];
 			channelRealtime[j].push(temp2);
-			downOffset += scale;
+			downOffset += offset;
 		}
 		downOffset = -3400;
 	}//end
 
 	console.log("channelName: "+channelName);
+	//options 
+	options = {
+	series:
+	{
+	    lines:
+			{
+	        show: true,
+	        lineWidth: 1.2,
+	    }
+  },
+  xaxis:
+	{
+	    show:true,
+			//mode:"time",
+			axisLabel:"milli seconds",
+			// max:60000
+			//max:1000
+      //mode:"time",
+      //tickSize: [1, "second"],// XXX:
+  },
+  yaxis:
+	{
+		position:"left",
+    	show:true,
+      // axisLabelUseCanvas: true,
+      // axisLabelFontSizePixels: 12,
+      // axisLabelFontFamily: 'Verdana, Arial',
+      // axisLabelPadding: 10,
+		ticks:channelName
+	}
+  ,
+    // {
+    // 	position:"left",
+    // 	tickFormatter:function(v){
+    // 		return v.toString();
+    // 	},
+    // }
+
+    legend: {
+        labelBoxBorderColor: "#fff",
+				position:"sw"
+    },
+    grid: {
+        backgroundColor: "#ffffff",
+        tickColor: "#008040"
+    },
+    /*	zoom: {
+			interactive: true
+		},
+		pan: {
+			interactive: true
+		}*/
+	};
 	plotSignal();
 
 
+	
 	//plot signal flot
-
 
 	function plotSignal() {
 		lval = 0;
