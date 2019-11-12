@@ -2,7 +2,8 @@ var totalPoint;
 var channelNum;
 var totalLengthOfGraph;
 var channel;
-var channelName;
+var channelName; //2 dim
+var cName; //1 dim
 var channelRealtime;//
 var r=0;//
 var dataset2;
@@ -78,6 +79,7 @@ $(function()
 	{   
 		channel = new Array();
 		channelName = new Array();
+		cName = new Array();
 		channelRealtime = new Array();
 
 		Swal.mixin({ //使用者自設定interval_time and downOffset
@@ -223,36 +225,29 @@ function completeFn()
 	//channel1
 	for(var i=0;i<channelNum;i++){
 		channel[i]=[]; //channel0~channel29
-		channelName[i] = [];
 	}
+	channelName = []; //initial channelName array
+	cName = [];
+	dataset = [];
 	for(var i=0;i<channelNum;i++){
 		for(var j=0;j<totalPoint;j++){
 			var temp = [arguments[0].data[1][j],arguments[0].data[i+2][j+1]-downOffset];
 			channel[i].push(temp);
 		}
 		var temp1 = [-downOffset,arguments[0].data[i+2][0]];//getChannel Name
+		var temp2 = arguments[0].data[i+2][0];
 		channelName.push(temp1);
-
+		cName.push(temp2);
 		downOffset += offset; //
 	}
 
-
-	/*
-	real time
-	*/
-	for(var j=0;j<totalPoint;j++){
-		channelRealtime[j] = [];
+	for(var i=0 ;i<2;i++){ //<channelNum
+	    dataset.push({label:cName[i], data: channel[i]});    	
 	}
-	for(var j=0;j<totalPoint;j++){
-		for(var i=0;i<channelNum;i++){
-			var temp2 = [arguments[0].data[1][j],arguments[0].data[i+2][j+1]-downOffset];
-			channelRealtime[j].push(temp2);
-			downOffset += offset;
-		}
-		downOffset = -3400;
-	}//end
 
 	console.log("channelName: "+channelName);
+	console.log("Name: "+cName);
+
 	//options 
 	options = {
 	series:
@@ -292,8 +287,9 @@ function completeFn()
     // }
 
     legend: {
+    	//show: false,
         labelBoxBorderColor: "#fff",
-				position:"sw"
+		position:"ne"
     },
     grid: {
         backgroundColor: "#ffffff",
@@ -306,26 +302,58 @@ function completeFn()
 			interactive: true
 		}*/
 	};
-	plotSignal();
+
+	var c = 0;
+	$.each(dataset, function(val) { //set channel color
+		val.color = c;
+		++c;
+		//console.log("val: "+val);
+		//console.log("val.label: "+val.label);
+	});
+
+	// insert checkboxes
+	var choiceContainer = $("#choices");
+	var count = 0;
+		$.each(dataset, function(val) {
+			choiceContainer.append("<br/><input type='checkbox' name='" + cName[count] +
+			"' checked='checked' id='id" + cName[count] + "'></input>" +
+			"<label for='id" + cName[count] + "'>"
+			+ cName[count] + "</label>");
+		count++;
+		console.log("========: "+cName[count]);
+	});
+
+	choiceContainer.find("input").click(plotSignal);
 
 
-	
 	//plot signal flot
-
 	function plotSignal() {
 		lval = 0;
 		rval = interval_time;
 
-	    dataset = [];
-	    //console.log("dataset: "+ dataset);
+	    var data = [];
 
-	    for(var i=0 ;i<channelNum;i++) //<channelNum
-	    	dataset.push({ data: channel[i],color: getRandomColor()});
+		
+		var k=0;
+		choiceContainer.find("input:checked").each(function () {
+			var key = $(this).attr("name");
+			if (key && dataset[k].label) {
+				data.push(dataset[k]);
+			}
+			k++;
+		});
 
-	    $.plot($("#flot-placeholder"), dataset, options);
 
-	 
+	    //console.log("dataset: "+dataset);
+	    //console.log("dataset.label: "+dataset[0].label);
+
+
+		if(data.length > 0){
+	  	  $.plot($("#flot-placeholder"), data, options); 
+	  	}
 	}
+
+	plotSignal();
 /*
 	dataset2=[];
 	//for(var j=0 ;j<totalPoint;j++) 
@@ -351,7 +379,7 @@ function completeFn()
 
 
 
-
+/*
 function getRandomColor() {
   var letters = '0123456789ABCDEF';
   var color = '#';
@@ -360,4 +388,4 @@ function getRandomColor() {
   }
   if(color=='"#ffffff')getRandomColor();//不要是白色
   return color;
-}
+}*/
