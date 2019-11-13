@@ -11,7 +11,7 @@ var dataset;
 var downOffset = -3400;
 var offset;
 var interval_time = 10000;
-var lval;
+var lval=0;
 var rval;
 // var colorArray = [];
 
@@ -93,7 +93,7 @@ $( document ).ready(function() { //initial plot area
           Swal.fire({
             title:"EEG censors",
             imageUrl:"../resources/eeg_33channels.png",
-            html:"<div><input type='checkbox' id='fp1'><label for='fp1'></label></div>"
+            html:"<div id='select_censor'><input type='checkbox' id='fp1'><label for='fp1'>FP1</label></div>"
           })
 
           $("label").click(function(){
@@ -304,7 +304,7 @@ function completeFn()
 	{
 	    show:true,
 			//mode:"time",
-		axisLabel:"milli seconds",
+		  axisLabel:"milli seconds",
 			// max:60000
 			//max:1000
       //mode:"time",
@@ -374,8 +374,8 @@ function completeFn()
 
 	//plot signal flot
 	function plotSignal() {
-		lval = 0;
-		rval = interval_time;
+    lval =0;
+    rval = interval_time;
 		checkBox();
 	 	//  data = [];
 		// choiceContainer.find("input:checked").each(function () {
@@ -424,6 +424,8 @@ function completeFn()
 }
 
 function checkBox(){
+  // if(!isNaN(rval) && !isNaN(lval))
+  //   options.xaxis.max = rval-lval;
 	data = [];
 	choiceContainer.find("input:checked").each(function () {
 		var key = $(this).attr("name");

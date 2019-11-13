@@ -11,21 +11,21 @@
   width:90%;
   height:100%;
 }
-input[type="checkbox"]{
+div#select_censor input[type="checkbox"]{
   display: none;
 }
-label::before{
-  content: "click me"
+div#select_censor label::before{
+  content: "click me";
+}
+
+div#select_censor input:checked+label::before{
+  content: "is click";
+  background-color: pink;
+  width:200px;
 }
 
 label:hover{
   cursor: pointer;
-}
-
-input:checked+label::before{
-  background-color: pink;
-  content: "is click";
-  width:200px;
 }
 
 label{
