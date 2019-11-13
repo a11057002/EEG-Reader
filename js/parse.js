@@ -6,13 +6,14 @@ var channelName; //2 dim
 var cName; //1 dim
 var channelRealtime;//
 var r=0;//
-var dataset2;
+// var dataset2;
 var dataset;
 var downOffset = -3400;
 var offset;
 var interval_time = 10000;
 var lval;
 var rval;
+// var colorArray = [];
 
 var options;
 
@@ -61,6 +62,19 @@ $( document ).ready(function() { //initial plot area
 				}
 			});
 
+      $("#eeg_pic_but").click(function(){
+          Swal.fire({
+            title:"EEG censors",
+            imageUrl:"../resources/eeg_33channels.png",
+            html:"<div><input type='checkbox' id='fp1'><label for='fp1'></label></div>"
+          })
+
+          $("label").click(function(){
+            
+          })
+      })
+
+
 			// $("#zoomIn").click(function(){
 			// 	 $("#flot-placeholder").zoom();
 			// })
@@ -76,7 +90,7 @@ $(function()
 {
 	//parse csv file to json file
 	$('#submit-parse').click(function()
-	{   
+	{
 		channel = new Array();
 		channelName = new Array();
 		cName = new Array();
@@ -123,7 +137,7 @@ $(function()
 
 						var txt = $('#input').val();
 						//console.log("TEXT:"+txt);
-						files.length=0;						
+						files.length=0;
 						files = $('#files')[0].files;
 						console.log("File:"+files);
 						var config = buildConfig();
@@ -241,14 +255,14 @@ function completeFn()
 		downOffset += offset; //
 	}
 
-	for(var i=0 ;i<2;i++){ //<channelNum
-	    dataset.push({label:cName[i], data: channel[i]});    	
+	for(var i=0 ;i<channelNum;i++){ //<channelNum
+	    dataset.push({label:cName[i], data: channel[i]});
 	}
 
 	console.log("channelName: "+channelName);
 	console.log("Name: "+cName);
 
-	//options 
+	//options
 	options = {
 	series:
 	{
@@ -304,8 +318,10 @@ function completeFn()
 	};
 
 	var c = 0;
-	$.each(dataset, function(val) { //set channel color
-		val.color = c;
+	$.each(dataset, function(key,val) { //set channel color
+    console.log(dataset);
+		val.color = "#4798B3";
+    console.log(val);
 		++c;
 		//console.log("val: "+val);
 		//console.log("val.label: "+val.label);
@@ -333,7 +349,7 @@ function completeFn()
 
 	    var data = [];
 
-		
+
 		var k=0;
 		choiceContainer.find("input:checked").each(function () {
 			var key = $(this).attr("name");
@@ -349,28 +365,28 @@ function completeFn()
 
 
 		if(data.length > 0){
-	  	  $.plot($("#flot-placeholder"), data, options); 
+	  	  $.plot($("#flot-placeholder"), data, options);
 	  	}
 	}
 
 	plotSignal();
 /*
 	dataset2=[];
-	//for(var j=0 ;j<totalPoint;j++) 
+	//for(var j=0 ;j<totalPoint;j++)
 	 //   	dataset2.push({ data: channelRealtime[j], color: getRandomColor()});
 	var plot = $.plot($("#flot-placeholder2"), dataset2, options);
 	function realTime(){
-		
+
 		var updateInterval = 30;
-		
+
 		if(r <= totalPoint){
 			plot.setData(channelRealtime[r]);
 			plot.draw();
 			r++;
 		}
 		setTimeout(realTime, updateInterval);
-		
-		
+
+
 	}
 	realTime();*/
 

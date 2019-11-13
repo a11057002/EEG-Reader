@@ -23,6 +23,7 @@
 <script type="text/javascript" src="../js/parse.js"></script>
 <!--<script src="../js/mne.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<link rel="stylesheet" href="../css/mne.css">
 
 <style type="text/css">
 </style>
@@ -32,21 +33,22 @@
 </Title>
 
   <body>
+      <img id="eeg_pic" src="../resources/eeg_33channels.png" hidden>
       <h1 style="font-size:3em">EEG訊號顯示</h1>
       <p><input type="file" id="files" multiple></p>
       <button id="submit-parse">Parse</button>
       <button id="previousPage">previous page</button>
       <button id="nextPage">next page</button>
-      <button id="zoomIn"> zoomIn </button> 
+      <button id="zoomIn"> zoomIn </button>
       <button id="zoomOut"> zoomOut </button>
-
-
-      <br><br>
+      <button id="eeg_pic_but" > Show Pic</button>
       <!--<textarea  id="fileContent" cols="100" rows="20"></textarea>-->
 
-      <div style="width:90%;height:70%;text-align:center;margin:10px">
-        <div id="flot-placeholder" style="float:left; width:90%;height:100%;"></div>
-        <div id="choices" style="float:right; width:10%;"></div>
+      <div style="width:90%;height:70%;margin:10px">
+        <div id="flot-placeholder"></div>
+        <div id="choices"></div>
       </div>
+
+
   </body>
 </html>
