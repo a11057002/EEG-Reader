@@ -19,75 +19,12 @@ var options;
 
 $( document ).ready(function() { //initial plot area
     $.plot($("#flot-placeholder"), [], []);
-		//next page
-			$("#nextPage").click(function () {
-				checkBox();
-				if(rval<totalLengthOfGraph)
-				{
-					$.plot("#flot-placeholder", data, {
-						series:{
-	   						lines:{
-			        			show: true,
-			        			lineWidth: 0.5,
-		    				}
-  						},
-						xaxis: {
-							show:true,
-							axisLabel:"milli seconds",
-							min: lval+=interval_time,
-							max: rval+=interval_time
-						},
-						yaxis: {
-							position:"left",
-    						show:true,
-    						max:3600,
-    						min:0,
-							ticks:channelName
-						},
-						legend: {
-	    					show: false,
-    					},
-						grid: {
-        				backgroundColor: "#ffffff",
-    					}
-					});
-				}
-			});
-		//back page
-			$("#previousPage").click(function () {
-				checkBox();
-				if(lval>0)
-				{
-					$.plot("#flot-placeholder", data, {
-						series:{
-	   						lines:{
-			        			show: true,
-			        			lineWidth: 0.5,
-		    				}
-  						},
-						xaxis: {
-							show:true,
-							axisLabel:"milli seconds",
-							min: lval-=interval_time,
-							max: rval-=interval_time
-
-						},
-						yaxis: {
-							position:"left",
-    						show:true,
-    						max:3600,
-    						min:0,
-							ticks:channelName
-						},
-						legend: {
-    						show: false,
-    					},
-						grid: {
-        				backgroundColor: "#ffffff",
-    					}
-					});
-				}
-			});
+    //plot signal
+    $("#plotSignal").click(plotSignal);
+	//next page
+	$("#nextPage").click(nextPage);
+	//back page
+	$("#previousPage").click(previousPage);
 
       $("#eeg_pic_but").click(function(){
           Swal.fire({
@@ -367,59 +304,22 @@ function completeFn()
 			+ cName[count] + "</label>");
 		count++;
 	});
-	console.log("choiceContainer:"+choiceContainer);
-
+	//console.log("choiceContainer:"+choiceContainer);
 	choiceContainer.find("input").click(plotSignal);
 
 
-	//plot signal flot
-	function plotSignal() {
-    lval =0;
+}
+
+//plot signal flot
+function plotSignal() {
+	lval =0;
     rval = interval_time;
-		checkBox();
-	 	//  data = [];
-		// choiceContainer.find("input:checked").each(function () {
-		// 	var key = $(this).attr("name");
-		// 	var id= $(this).attr("id");
-		// 	console.log("key:"+key);
-		// 	console.log("id:"+id);
-		// 	console.log("label:"+dataset[id].label);
 
-		// 	if (key && dataset[id].label) {
-		// 		data.push(dataset[id]);
-		// 	}
-		// });
-
-	    //console.log("dataset: "+dataset);
-	    //console.log("dataset.label: "+dataset[0].label);
-
-		if(data.length > 0){
-	  	  $.plot($("#flot-placeholder"), data, options);
-	  	}
-
+	checkBox();
+	 	
+	if(data.length > 0){
+	  	$.plot($("#flot-placeholder"), data, options);
 	}
-
-	plotSignal();
-/*
-	dataset2=[];
-	//for(var j=0 ;j<totalPoint;j++)
-	 //   	dataset2.push({ data: channelRealtime[j], color: getRandomColor()});
-	var plot = $.plot($("#flot-placeholder2"), dataset2, options);
-	function realTime(){
-
-		var updateInterval = 30;
-
-		if(r <= totalPoint){
-			plot.setData(channelRealtime[r]);
-			plot.draw();
-			r++;
-		}
-		setTimeout(realTime, updateInterval);
-
-
-	}
-	realTime();*/
-
 
 }
 
@@ -438,6 +338,74 @@ function checkBox(){
 			data.push(dataset[id]);
 		}
 	});
+}
+
+function nextPage() {
+	checkBox();
+		if(rval<totalLengthOfGraph)
+		{
+			$.plot("#flot-placeholder", data, {
+				series:{
+	   				lines:{
+			        	show: true,
+			        	lineWidth: 0.5,
+		    		}
+  				},
+				xaxis: {
+					show:true,
+					axisLabel:"milli seconds",
+					min: lval+=interval_time,
+					max: rval+=interval_time
+				},
+				yaxis: {
+					position:"left",
+    				show:true,
+    				max:3600,
+    				min:0,
+					ticks:channelName
+				},
+				legend: {
+	    			show: false,
+    			},
+				grid: {
+        			backgroundColor: "#ffffff",
+    			}
+			});
+		}
+}
+
+function previousPage() {
+		checkBox();
+		if(lval>0)
+		{
+			$.plot("#flot-placeholder", data, {
+				series:{
+	   				lines:{
+		       			show: true,
+	        			lineWidth: 0.5,
+    				}
+ 				},
+				xaxis: {
+					show:true,
+					axisLabel:"milli seconds",
+					min: lval-=interval_time,
+					max: rval-=interval_time
+				},
+				yaxis: {
+					position:"left",
+   					show:true,
+   					max:3600,
+    				min:0,
+					ticks:channelName
+				},
+				legend: {
+    				show: false,
+    			},
+				grid: {
+       				backgroundColor: "#ffffff",
+    			}
+			});
+		}
 }
 
 
