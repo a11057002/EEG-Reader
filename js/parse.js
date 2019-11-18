@@ -13,6 +13,7 @@ var offset;
 var interval_time;
 var lval;
 var rval;
+var censorString = "";
 // var colorArray = [];
 
 var options;
@@ -26,18 +27,6 @@ $( document ).ready(function() { //initial plot area
 	$("#nextPage").click(nextPage);
 	//back page
 	$("#previousPage").click(previousPage);
-
-      $("#eeg_pic_but").click(function(){
-          Swal.fire({
-            title:"EEG censors",
-            imageUrl:"../resources/eeg_33channels.png",
-            html:"<div id='select_censor'><input type='checkbox' id='fp1'><label for='fp1'>FP1</label></div>"
-          })
-
-          $("label").click(function(){
-
-          })
-      })
 
 
 			// $("#zoomIn").click(function(){
@@ -108,7 +97,6 @@ $(function()
 						}
 					}
 				})
-			
 
 	});
 
@@ -172,11 +160,12 @@ function completeFn()
 	channelNum = (arguments[0].data.length)-3;
 
 
+
 	totalLengthOfGraph = parseInt(totalLengthOfGraph,10);
 	$("#xPadding").val(totalLengthOfGraph);
 	interval_time = $("#xPadding").val();
 	interval_time = parseInt(interval_time);
-	
+
 	//console.log("TTT:"+totalPoint);
 	//console.log("YYY:"+totalLengthOfGraph);
 	//channel1
@@ -198,7 +187,7 @@ function completeFn()
 		downOffset += 150; //offset 
 	}
 
-	for(var i=0 ;i<3;i++){ //<channelNum
+	for(var i=0 ;i<channelNum;i++){ //<channelNum
 	    dataset.push({label:cName[i], data: channel[i]});
 	}
 
@@ -206,7 +195,6 @@ function completeFn()
 	console.log("Name: "+cName);
 
 
-  
 
 	var c = 0;
 	$.each(dataset, function(key,val) { //set channel color
@@ -224,14 +212,37 @@ function completeFn()
 	var count = 0;
 		$.each(dataset, function(val) {
 			choiceContainer.append("<br/><input type='checkbox' name='" + cName[count] +
-			"' checked='checked' id='"+ count + "'></input>" +
-			"<label for='id" + cName[count] + "'>"
-			+ cName[count] + "</label>");
+			"' checked='checked' id='"+ count + "'hidden >");
+      // </input>"
+			// "<label for='id" + cName[count] + "'>"
+			// + cName[count]
+      // + "</label>");
 		count++;
 	});
 	//console.log("choiceContainer:"+choiceContainer);
 
 	choiceContainer.find("input").click(plotSignal);
+
+  $("#eeg_pic_but").click(function(){
+    var censorString = "";
+    for(var i=0;i<channelNum;i++)
+    {
+          if($("#"+i+"").is(":checked"))
+              censorString += "<div class='select_censor pink'><label for='"+i +"' onclick='labelChangeColor(this)' typein='"+ channelName[i][1] +"'></label></div>";
+          else
+              censorString += "<div class='select_censor white'><label for='"+i +"' onclick='labelChangeColor(this)' typein='"+ channelName[i][1] +"'></label></div>";
+    }
+
+      Swal.fire({
+        title:"EEG censors",
+        imageUrl:"../resources/eeg_33channels.png",
+        html: censorString
+      })
+
+      // $("label").click(function(){
+      //
+      // })
+  })
 
 
 }//end completeFn
@@ -246,7 +257,7 @@ function plotSignal() {
     
 
 	checkBox();
-	 	
+
 	if(data.length > 0){
 	  	$.plot($("#flot-placeholder"), data, {
 				series:
@@ -376,6 +387,14 @@ function previousPage() {
     			}
 			});
 		}
+}
+
+
+function labelChangeColor(self){
+    if(self.parentElement.className.includes("white"))
+        self.parentElement.className = "select_censor pink";
+    else
+        self.parentElement.className = "select_censor white";
 }
 
 
