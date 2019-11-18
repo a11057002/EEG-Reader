@@ -8,10 +8,10 @@ var data;
 var choiceContainer;
 var dataset2;
 var dataset;
-var downOffset = -3400;
+var downOffset = -4300;
 var offset;
-var interval_time = 10000;
-var lval=0;
+var interval_time;
+var lval;
 var rval;
 // var colorArray = [];
 
@@ -19,6 +19,7 @@ var options;
 
 $( document ).ready(function() { //initial plot area
     $.plot($("#flot-placeholder"), [], []);
+
     //plot signal
     $("#plotSignal").click(plotSignal);
 	//next page
@@ -60,41 +61,11 @@ $(function()
 		cName = new Array();
 		channelRealtime = new Array();
 
-		Swal.mixin({ //使用者自設定interval_time and downOffset
-			  input: 'number',
-			  confirmButtonText: 'Next &rarr;',
-			  showCancelButton: true,
-			  progressSteps: ['1', '2']
-			}).queue([
-			  {
-			    title: 'set Interval time',
-			    text: 'default 10000ms',
-			    //inputPlaceholder: "input number(ms)"
-			    inputValue: 10000
-			  },
-			  {
-			  	title: 'set offset',
-			    text: 'default 150',
-			    //inputPlaceholder: "input number"
-			    inputValue: 150
-			  }
-
-			]).then((result) => {
-			  	console.log(result.value);
-			  	interval_time = result.value[0];
-			  	offset = result.value[1];
-			  	interval_time = parseInt(interval_time,10);
-			  	offset = parseInt(offset,10);
-			}).then(()=>{
 				Swal.fire({
-					title:"加速解析中:D",
-			      html: "Input interval_time: " + interval_time +
-				  		"<br> Input offset: " + offset,
-			      confirmButtonText: 'complete!',
-					showConfirmButton:false,
+				  title:"加速解析中:D",		      
 					onBeforeOpen:()=>{
 						Swal.showLoading();
-						downOffset = -3400; //讓每次parse回歸
+						downOffset = -4300; //讓每次parse回歸
 						k=0;
 						stepped = 0;
 						chunks = 0;
@@ -137,7 +108,7 @@ $(function()
 						}
 					}
 				})
-			})
+			
 
 	});
 
@@ -199,6 +170,13 @@ function completeFn()
 	totalPoint = arguments[0].data[1].length;
 	totalLengthOfGraph = arguments[0].data[1][totalPoint-1];
 	channelNum = (arguments[0].data.length)-3;
+
+
+	totalLengthOfGraph = parseInt(totalLengthOfGraph,10);
+	$("#xPadding").val(totalLengthOfGraph);
+	interval_time = $("#xPadding").val();
+	interval_time = parseInt(interval_time);
+	
 	//console.log("TTT:"+totalPoint);
 	//console.log("YYY:"+totalLengthOfGraph);
 	//channel1
@@ -217,7 +195,7 @@ function completeFn()
 		var temp2 = arguments[0].data[i+2][0];
 		channelName.push(temp1);
 		cName.push(temp2);
-		downOffset += offset; //
+		downOffset += 150; //offset 
 	}
 
 	for(var i=0 ;i<3;i++){ //<channelNum
@@ -227,61 +205,8 @@ function completeFn()
 	console.log("channelName: "+channelName);
 	console.log("Name: "+cName);
 
-	//options
-	options = {
-	series:
-	{
-	    lines:
-			{
-	        show: true,
-	        lineWidth: 0.5,
-	    }
-  },
-  xaxis:
-	{
-	    show:true,
-			//mode:"time",
-		  axisLabel:"milli seconds",
-			// max:60000
-			//max:1000
-      //mode:"time",
-      //tickSize: [1, "second"],// XXX:
-  },
-  yaxis:
-	{
-		position:"left",
-    	show:true,
-    	max:3600,
-    	min:0,
-      // axisLabelUseCanvas: true,
-      // axisLabelFontSizePixels: 12,
-      // axisLabelFontFamily: 'Verdana, Arial',
-      // axisLabelPadding: 10,
-		ticks:channelName
-	}
-  ,
-    // {
-    // 	position:"left",
-    // 	tickFormatter:function(v){
-    // 		return v.toString();
-    // 	},
-    // }
 
-    legend: {
-    	show: false,
-       //labelBoxBorderColor: "#fff",
-		//position:"ne"
-    },
-    grid: {
-        backgroundColor: "#ffffff",
-    },
-    /*	zoom: {
-			interactive: true
-		},
-		pan: {
-			interactive: true
-		}*/
-	};
+  
 
 	var c = 0;
 	$.each(dataset, function(key,val) { //set channel color
@@ -305,21 +230,62 @@ function completeFn()
 		count++;
 	});
 	//console.log("choiceContainer:"+choiceContainer);
+
 	choiceContainer.find("input").click(plotSignal);
 
 
-}
+}//end completeFn
 
 //plot signal flot
 function plotSignal() {
+	interval_time = $("#xPadding").val();
+	interval_time = parseInt(interval_time);
+
 	lval =0;
     rval = interval_time;
+    
 
 	checkBox();
 	 	
 	if(data.length > 0){
-	  	$.plot($("#flot-placeholder"), data, options);
+	  	$.plot($("#flot-placeholder"), data, {
+				series:
+				{
+				    lines:
+						{
+				        show: true,
+				        lineWidth: 0.5,
+				    }
+			  },
+			  xaxis:
+				{
+				    show:true,
+				    min:0,
+				    max:interval_time,
+					axisLabel:"milli seconds",
+
+			  },
+			  yaxis:
+				{
+					position:"left",
+			    	show:true,
+			    	max:4500,
+			    	min:0,
+
+					ticks:channelName
+				},
+
+
+			    legend: {
+			    	show: false,
+			    },
+			    grid: {
+			        backgroundColor: "#ffffff",
+			    },
+
+				});
 	}
+
 
 }
 
@@ -330,9 +296,11 @@ function checkBox(){
 	choiceContainer.find("input:checked").each(function () {
 		var key = $(this).attr("name");
 		var id= $(this).attr("id");
-	// console.log("key:"+key);
-	// console.log("id:"+id);
-	// console.log("label:"+dataset[id].label);
+		// console.log("key:"+key);
+		// console.log("id:"+id);
+		// console.log("label:"+dataset[id].label);
+		// console.log("lval: "+lval);
+		// console.log("rval: "+rval);
 
 		if (key && dataset[id].label) {
 			data.push(dataset[id]);
@@ -342,6 +310,7 @@ function checkBox(){
 
 function nextPage() {
 	checkBox();
+	
 		if(rval<totalLengthOfGraph)
 		{
 			$.plot("#flot-placeholder", data, {
@@ -360,7 +329,7 @@ function nextPage() {
 				yaxis: {
 					position:"left",
     				show:true,
-    				max:3600,
+    				max:4500,
     				min:0,
 					ticks:channelName
 				},
@@ -376,6 +345,7 @@ function nextPage() {
 
 function previousPage() {
 		checkBox();
+		
 		if(lval>0)
 		{
 			$.plot("#flot-placeholder", data, {
@@ -394,7 +364,7 @@ function previousPage() {
 				yaxis: {
 					position:"left",
    					show:true,
-   					max:3600,
+   					max:4500,
     				min:0,
 					ticks:channelName
 				},
