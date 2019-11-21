@@ -1,0 +1,48 @@
+#eeg_pic_but{
+  position: relative;
+  float: right;
+  max-width: 15%;
+  max-height: 20%;
+  margin-right: 5%;
+}
+
+#flot-placeholder{
+  float:left;
+  width:90%;
+  height:100%;
+}
+
+div.select_sensor{
+  width: 33%;
+  float: left;
+}
+
+div.select_sensor input[type="checkbox"]{
+  display: none;
+}
+div.select_sensor label::before{
+  content: attr(typein);
+}
+
+/* div.select_censor label::before {
+  content: "is click";
+  background-color: pink;
+  width:200px;
+} */
+
+.white{
+  background-color: white;
+}
+
+.pink{
+  background-color: pink;
+}
+
+label:hover{
+  cursor: pointer;
+}
+
+label{
+  width: 100px;
+  height: 100px;
+}
