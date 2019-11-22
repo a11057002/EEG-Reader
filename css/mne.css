@@ -3,7 +3,7 @@
   float: right;
   max-width: 15%;
   max-height: 20%;
-  margin-right: 5%;
+  margin-right: 10%;
 }
 
 #flot-placeholder{
@@ -12,15 +12,15 @@
   height:100%;
 }
 
-div.select_censor{
+div.select_sensor{
   width: 33%;
   float: left;
 }
 
-div.select_censor input[type="checkbox"]{
+div.select_sensor input[type="checkbox"]{
   display: none;
 }
-div.select_censor label::before{
+div.select_sensor label::before{
   content: attr(typein);
 }
 

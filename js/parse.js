@@ -27,6 +27,7 @@ $(function() {
   $('#submit-parse').click(function() {
     Swal.fire({
       title: "加速解析中:D",
+      allowOutsideClick: false,
       onBeforeOpen: () => {
         Swal.showLoading();
         getData();
@@ -186,7 +187,7 @@ function getData() {
 
       $("#xPadding").val(totalLengthOfGraph);
 
-      for (var i = 0; i <= 5; i++) {
+      for (var i = 0; i < channelNum; i++) {
         channelName.push([-downOffset, cName[i]]);
         input = Object.values(dataresult[cName[i]]);
         data = time.map((value) => {
@@ -224,7 +225,7 @@ function getData() {
 
     Swal.fire({
       title: "EEG sensors",
-      imageUrl: "../static/resources/eeg_33channels.png",
+      imageUrl: "../resources/eeg_33channels.png",
       html: sensorString
     });
   });

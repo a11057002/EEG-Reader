@@ -33,25 +33,21 @@
 </Title>
 
   <body>
-      <img id="eeg_pic" src="../resources/eeg_33channels.png" hidden>
       <h1 style="font-size:3em">EEG訊號顯示</h1>
       <p>
         <input type="file" id="files" multiple style="background:#ccc;">
         <button id="submit-parse">Parse</button>
       </p>
       <p>
-        Input iterval time:<input type="number" id="xPadding" value=0 style="background:#ccc;">//x軸的間距
+        Input iterval time:<input type="number" id="xPadding" value=0 style="background:#ccc;">
       </p>
 
       <button id="plotSignal">Plot signal</button>
       <button id="previousPage">previous page</button>
       <button id="nextPage">next page</button>
-
       <button id="eeg_pic_but" > Select Channel </button>
 
-      <!--<textarea  id="fileContent" cols="100" rows="20"></textarea>-->
-
-      <div style="width:90%;height:70%;margin:10px">
+      <div style="width:100%;height:75%;margin:10px">
         <div id="flot-placeholder"></div>
         <div id="choices"></div>
       </div>
