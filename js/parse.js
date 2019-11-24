@@ -4,18 +4,18 @@ var data; // after check
 var cName;
 var choiceContainer;
 var dataset;
-var downOffset = -4300;
+var downOffset = -4500;
 var interval_time;
 var lval;
 var rval;
 var sensorString = "";
-// var colorArray = [];
+var checksensor = ["FP1","FP2","F7","O1"]
 
 
 $(document).ready(function() { //initial plot area
   $.plot($("#flot-placeholder"), [], []);
   //plot signal
-  $("#plotSignal").click(plotSignal);
+  $("#plotSignal").click(plotSignalfromHead);
   //next page
   $("#nextPage").click(nextPage);
   //back page
@@ -29,6 +29,11 @@ $(function() {
       title: "加速解析中:D",
       allowOutsideClick: false,
       onBeforeOpen: () => {
+        if(!$("#files")[0].files.length)
+        {
+          Swal.close();
+          return;
+        }
         Swal.showLoading();
         getData();
       }
@@ -38,11 +43,6 @@ $(function() {
 
 //plot signal flot
 function plotSignal() {
-  interval_time = $("#xPadding").val();
-  interval_time = parseInt(interval_time);
-
-  lval = 0;
-  rval = interval_time;
 
   checkBox();
 
@@ -56,14 +56,14 @@ function plotSignal() {
       },
       xaxis: {
         show: true,
-        min: 0,
-        max: interval_time,
+        min: lval,
+        max: rval,
         axisLabel: "milli seconds",
       },
       yaxis: {
         position: "left",
         show: true,
-        max: 4500,
+        max: 4800,
         min: 0,
         ticks: channelName
       },
@@ -77,15 +77,22 @@ function plotSignal() {
   }
 }
 
+function plotSignalfromHead(){
+  interval_time = $("#xPadding").val();
+  interval_time = parseInt(interval_time);
+  lval = 0;
+  rval = interval_time;
+  plotSignal();
+}
+
+
 function checkBox() {
   data = [];
   choiceContainer.find("input:checked").each(function() {
-    var key = $(this).attr("name");
-    var id = $(this).attr("id");
 
-    if (key && dataset[id].label) {
-      data.push(dataset[id]);
-    }
+    var input = dataset.findIndex((result)=>{if(result.label==$(this).attr("id")) return result});
+    data.push(dataset[input]);
+
   });
 }
 
@@ -110,7 +117,7 @@ function nextPage() {
       yaxis: {
         position: "left",
         show: true,
-        max: 4500,
+        max: 4800,
         min: 0,
         ticks: channelName
       },
@@ -145,7 +152,7 @@ function previousPage() {
       yaxis: {
         position: "left",
         show: true,
-        max: 4500,
+        max: 4800,
         min: 0,
         ticks: channelName
       },
@@ -167,12 +174,13 @@ function labelChangeColor(self) {
     self.parentElement.className = "select_sensor white";
 }
 
-function getData() {
+function getData(){
 
   var filename = $("#files")[0].files[0].name;
 
   $.ajax({
     url: "http://140.121.197.92:8787/getdata/" + filename,
+    type: "GET",
     success: function(result) {
       dataset = [];
       channelName = [];
@@ -204,8 +212,7 @@ function getData() {
       choiceContainer = $("#choices");
       var count = 0;
       $.each(dataset, function(val) {
-        choiceContainer.append("<br/><input type='checkbox' name='" + cName[count] +
-          "' checked='checked' id='" + count + "'hidden >");
+        choiceContainer.append("<br/><input type='checkbox' name='" + cName[count] + "' checked='checked' id='" + cName[count] + "'hidden >");
         count++;
       });
 
@@ -217,10 +224,14 @@ function getData() {
   $("#eeg_pic_but").click(function() {
     var sensorString = "";
     for (var i = 0; i < channelNum; i++) {
-      if ($("#" + i + "").is(":checked"))
-        sensorString += "<div class='select_sensor pink'><label for='" + i + "' onclick='labelChangeColor(this)' typein='" + cName[i] + "'></label></div>";
+
+      if(checksensor.includes(cName[i]))
+        sensorString += "<div class='select_sensor'>&nbsp;</div>"
+
+      if ($("#" + cName[i] + "").is(":checked"))
+        sensorString += "<div class='select_sensor pink'><label for='" + cName[i] + "' onclick='labelChangeColor(this)' typein='" + cName[i] + "'></label></div>";
       else
-        sensorString += "<div class='select_sensor white'><label for='" + i + "' onclick='labelChangeColor(this)' typein='" + cName[i] + "'></label></div>";
+        sensorString += "<div class='select_sensor white'><label for='" + cName[i] + "' onclick='labelChangeColor(this)' typein='" + cName[i] + "'></label></div>";
     }
 
     Swal.fire({
