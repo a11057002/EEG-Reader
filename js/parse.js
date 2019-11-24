@@ -4,7 +4,7 @@ var data; // after check
 var cName;
 var choiceContainer;
 var dataset;
-var downOffset = -4500;
+var downOffset = -9000;
 var interval_time;
 var lval;
 var rval;
@@ -63,7 +63,7 @@ function plotSignal() {
       yaxis: {
         position: "left",
         show: true,
-        max: 4800,
+        max: 9600,
         min: 0,
         ticks: channelName
       },
@@ -117,7 +117,7 @@ function nextPage() {
       yaxis: {
         position: "left",
         show: true,
-        max: 4800,
+        max: 9600,
         min: 0,
         ticks: channelName
       },
@@ -152,7 +152,7 @@ function previousPage() {
       yaxis: {
         position: "left",
         show: true,
-        max: 4800,
+        max: 9600,
         min: 0,
         ticks: channelName
       },
@@ -195,7 +195,7 @@ function getData(){
 
       $("#xPadding").val(totalLengthOfGraph);
 
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < channelNum; i++) {
         channelName.push([-downOffset, cName[i]]);
         input = Object.values(dataresult[cName[i]]);
         data = time.map((value) => {
@@ -210,7 +210,7 @@ function getData(){
           color: "#4798B3",
           data: data
         });
-        downOffset += 500;
+        downOffset += 300;
       }
       $("#choices").html(""); //避免重複append
       choiceContainer = $("#choices");
