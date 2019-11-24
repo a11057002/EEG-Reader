@@ -188,25 +188,29 @@ function getData(){
 
       cName = Object.keys(dataresult);
       var time = Object.keys(dataresult[cName[0]]);
-
+      //console.log("time: "+ time);
       channelNum = cName.length;
       totalLengthOfGraph = time.length;
       totalLengthOfGraph = parseInt(totalLengthOfGraph, 10);
 
       $("#xPadding").val(totalLengthOfGraph);
 
-      for (var i = 0; i < channelNum; i++) {
+      for (var i = 0; i < 3; i++) {
         channelName.push([-downOffset, cName[i]]);
         input = Object.values(dataresult[cName[i]]);
         data = time.map((value) => {
-          return [value, input[value] - downOffset]
+          //console.log("x-axis: "+value);
+          //console.log("y-axis: "+input[value]);
+          return [value, (input[value]*5) - downOffset]
+          //*5放大波形
         });
+        //console.log("yyyyyy: "+input[58330]);
         dataset.push({
           label: cName[i],
           color: "#4798B3",
           data: data
         });
-        downOffset += 150;
+        downOffset += 500;
       }
       $("#choices").html(""); //避免重複append
       choiceContainer = $("#choices");
