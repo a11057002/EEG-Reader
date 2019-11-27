@@ -213,7 +213,7 @@ function getData(){
       time = Object.keys(dataresult[cName[0]]);
       //console.log("time: "+ time);
       channelNum = cName.length;
-      totalLengthOfGraph = time.length;
+      totalLengthOfGraph = time.length*4;
       totalLengthOfGraph = parseInt(totalLengthOfGraph, 10);
       downOffset = -(offset * channelNum);
 
@@ -227,7 +227,7 @@ function getData(){
           //console.log("y-axis: "+input[value]);
           scale_val = $("#scale").val();
           scale_val = parseInt(scale_val);
-          return [value, (input[value]*scale_val) - downOffset]
+          return [value, (input[value/4]*scale_val) - downOffset]   // 4毫秒計一次
           
         });
         dataset.push({
