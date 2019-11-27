@@ -2,10 +2,13 @@ var totalLengthOfGraph;
 var channelName; //2 dim
 var data; // after check
 var cName;
+var time;
 var choiceContainer;
 var dataset;
-var downOffset = -9000;
+var offset = 300;
+var downOffset;
 var interval_time;
+var scale_val;
 var lval;
 var rval;
 var sensorString = "";
@@ -20,6 +23,12 @@ $(document).ready(function() { //initial plot area
   $("#nextPage").click(nextPage);
   //back page
   $("#previousPage").click(previousPage);
+  //
+  // $("#flot-placeholder").bind("plothover", function (event, pos, item) {
+  //     var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
+  //     $("#hoverdata").text(str);
+
+  // });
 });
 
 
@@ -63,7 +72,7 @@ function plotSignal() {
       yaxis: {
         position: "left",
         show: true,
-        max: 9600,
+        max: offset * (channelNum+2),
         min: 0,
         ticks: channelName
       },
@@ -72,14 +81,18 @@ function plotSignal() {
       },
       grid: {
         backgroundColor: "#ffffff",
+        //hoverable: true,
       },
     });
   }
+  
 }
 
 function plotSignalfromHead(){
   interval_time = $("#xPadding").val();
   interval_time = parseInt(interval_time);
+  $("#scale_val").html("scale<br>"+scale_val);
+
   lval = 0;
   rval = interval_time;
   plotSignal();
@@ -93,6 +106,12 @@ function checkBox() {
     var input = dataset.findIndex((result)=>{if(result.label==$(this).attr("id")) return result});
     data.push(dataset[input]);
 
+    // for(var i=0;i<channelNum;i++){
+    //   for(var j=0;j<totalLengthOfGraph;j++){
+    //     data[i].data[j][1] = dataset[i].data[j][1]/.....
+    //   }
+    // }
+    
   });
 }
 
@@ -117,7 +136,7 @@ function nextPage() {
       yaxis: {
         position: "left",
         show: true,
-        max: 9600,
+        max: offset * (channelNum+2),
         min: 0,
         ticks: channelName
       },
@@ -126,9 +145,11 @@ function nextPage() {
       },
       grid: {
         backgroundColor: "#ffffff",
+        //hoverable: true,
       }
     });
   }
+  
 }
 
 function previousPage() {
@@ -152,7 +173,7 @@ function previousPage() {
       yaxis: {
         position: "left",
         show: true,
-        max: 9600,
+        max: offset * (channelNum+2),
         min: 0,
         ticks: channelName
       },
@@ -161,9 +182,11 @@ function previousPage() {
       },
       grid: {
         backgroundColor: "#ffffff",
+        //hoverable: true,
       }
     });
   }
+  
 }
 
 
@@ -187,30 +210,32 @@ function getData(){
       dataresult = JSON.parse(result["data"]);
 
       cName = Object.keys(dataresult);
-      var time = Object.keys(dataresult[cName[0]]);
+      time = Object.keys(dataresult[cName[0]]);
       //console.log("time: "+ time);
       channelNum = cName.length;
       totalLengthOfGraph = time.length;
       totalLengthOfGraph = parseInt(totalLengthOfGraph, 10);
+      downOffset = -(offset * channelNum);
 
       $("#xPadding").val(totalLengthOfGraph);
 
-      for (var i = 0; i < channelNum; i++) {
+      for (var i = 0; i < channelNum; i++) {//channelNum
         channelName.push([-downOffset, cName[i]]);
         input = Object.values(dataresult[cName[i]]);
         data = time.map((value) => {
           //console.log("x-axis: "+value);
           //console.log("y-axis: "+input[value]);
-          return [value, (input[value]*5) - downOffset]
-          //*5放大波形
+          scale_val = $("#scale").val();
+          scale_val = parseInt(scale_val);
+          return [value, (input[value]*scale_val) - downOffset]
+          
         });
-        //console.log("yyyyyy: "+input[58330]);
         dataset.push({
           label: cName[i],
           color: "#4798B3",
           data: data
         });
-        downOffset += 300;
+        downOffset += offset;
       }
       $("#choices").html(""); //避免重複append
       choiceContainer = $("#choices");
@@ -245,7 +270,6 @@ function getData(){
     });
   });
 }
-
 
 
 // var totalPoint;
