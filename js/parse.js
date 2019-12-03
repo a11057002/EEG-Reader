@@ -91,7 +91,7 @@ function plotSignal() {
 function plotSignalfromHead(){
   interval_time = $("#xPadding").val();
   interval_time = parseInt(interval_time);
-  $("#scale_val").html("scale<br>"+scale_val+'<path id="lineAB" d="M 0 2 l 50 0" stroke="black" stroke-width="1.5" fill="none" />'+
+  $("#scale_val").html("scale<br>"+scale_val+'<path d="M 0 2 l 50 0" stroke="black" stroke-width="1.5" fill="none" />'+
               '<path d="M 0 20 l 50 0" stroke="black" stroke-width="1.5" fill="none" />'+
               '<path d="M 25 2 l 0 18" stroke="black" stroke-width="1.5" fill="none" />');
 
