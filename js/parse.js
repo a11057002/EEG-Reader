@@ -85,16 +85,17 @@ function plotSignal() {
       },
     });
   }
-  
+
 }
 
 function plotSignalfromHead(){
   interval_time = $("#xPadding").val();
   interval_time = parseInt(interval_time);
-  $("#scale_val").html("scale<br>"+scale_val+'<path d="M 0 2 l 50 0" stroke="black" stroke-width="1.5" fill="none" />'+
-              '<path d="M 0 20 l 50 0" stroke="black" stroke-width="1.5" fill="none" />'+
-              '<path d="M 25 2 l 0 18" stroke="black" stroke-width="1.5" fill="none" />');
 
+  $("#scale_val").html("scale<br>"+scale_val);
+  $("#scale_svg").html("<path d='M 0 2 l 50 0' stroke='black' stroke-width='1.5' fill='none' />"+
+              "<path d='M 0 20 l 50 0' stroke='black' stroke-width='1.5' fill='none' />"+
+              "<path d='M 25 2 l 0 18' stroke='black' stroke-width='1.5' fill='none' />");
   lval = 0;
   rval = interval_time;
   plotSignal();
@@ -113,7 +114,7 @@ function checkBox() {
     //     data[i].data[j][1] = dataset[i].data[j][1]/.....
     //   }
     // }
-    
+
   });
 }
 
@@ -151,7 +152,7 @@ function nextPage() {
       }
     });
   }
-  
+
 }
 
 function previousPage() {
@@ -188,7 +189,7 @@ function previousPage() {
       }
     });
   }
-  
+
 }
 
 
@@ -230,7 +231,7 @@ function getData(){
           scale_val = $("#scale").val();
           scale_val = parseInt(scale_val);
           return [value, (input[value/4]*scale_val) - downOffset]   // 4毫秒計一次
-          
+
         });
         dataset.push({
           label: cName[i],
@@ -267,7 +268,7 @@ function getData(){
 
     Swal.fire({
       title: "EEG sensors",
-      imageUrl: "../resources/eeg_33channels.png",
+      imageUrl: "../static/resources/eeg_33channels.png",
       html: sensorString
     });
   });
