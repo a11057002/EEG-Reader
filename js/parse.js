@@ -9,6 +9,7 @@ var offset = 300;
 var downOffset;
 var interval_time;
 var scale_val;
+var old_scale_val;
 var lval;
 var rval;
 var sensorString = "";
@@ -91,11 +92,16 @@ function plotSignal() {
 function plotSignalfromHead(){
   interval_time = $("#xPadding").val();
   interval_time = parseInt(interval_time);
+  downOffset = -(offset * channelNum);
+  
+  scale_val = $("#scale").val();
+  scale_val = parseInt(scale_val);
 
-  $("#scale_val").html("scale<br>"+scale_val);
-  $("#scale_svg").html("<path d='M 0 2 l 50 0' stroke='black' stroke-width='1.5' fill='none' />"+
-              "<path d='M 0 20 l 50 0' stroke='black' stroke-width='1.5' fill='none' />"+
-              "<path d='M 25 2 l 0 18' stroke='black' stroke-width='1.5' fill='none' />");
+  pushData();
+  $("#scale_val").html("&nbsp;scale<br>&nbsp;&nbsp;&nbsp;&nbsp"+scale_val);
+  $("#scale_svg").html("<path d='M 0 5 l 50 0' stroke='black' stroke-width='1.5' fill='none' />"+//上
+              "<path d='M 0 18 l 50 0' stroke='black' stroke-width='1.5' fill='none' />"+//下
+              "<path d='M 25 5 l 0 13' stroke='black' stroke-width='1.5' fill='none' />");//中間
   lval = 0;
   rval = interval_time;
   plotSignal();
@@ -108,12 +114,6 @@ function checkBox() {
 
     var input = dataset.findIndex((result)=>{if(result.label==$(this).attr("id")) return result});
     data.push(dataset[input]);
-
-    // for(var i=0;i<channelNum;i++){
-    //   for(var j=0;j<totalLengthOfGraph;j++){
-    //     data[i].data[j][1] = dataset[i].data[j][1]/.....
-    //   }
-    // }
 
   });
 }
@@ -218,28 +218,9 @@ function getData(){
       channelNum = cName.length;
       totalLengthOfGraph = time.length*4;
       totalLengthOfGraph = parseInt(totalLengthOfGraph, 10);
-      downOffset = -(offset * channelNum);
-
       $("#xPadding").val(totalLengthOfGraph);
+      pushData();
 
-      for (var i = 0; i < channelNum; i++) {//channelNum
-        channelName.push([-downOffset, cName[i]]);
-        input = Object.values(dataresult[cName[i]]);
-        data = time.map((value) => {
-          //console.log("x-axis: "+value);
-          //console.log("y-axis: "+input[value]);
-          scale_val = $("#scale").val();
-          scale_val = parseInt(scale_val);
-          return [value, (input[value/4]*scale_val) - downOffset]   // 4毫秒計一次
-
-        });
-        dataset.push({
-          label: cName[i],
-          color: "#4798B3",
-          data: data
-        });
-        downOffset += offset;
-      }
       $("#choices").html(""); //避免重複append
       choiceContainer = $("#choices");
       var count = 0;
@@ -274,6 +255,28 @@ function getData(){
   });
 }
 
+function pushData(){
+  dataset = [];
+  channelName = [];
+  downOffset = -(offset * channelNum);
+
+  for (var i = 0; i < channelNum; i++) {//channelNum
+    channelName.push([-downOffset, cName[i]]);
+    input = Object.values(dataresult[cName[i]]);
+    data = time.map((value) => {
+    scale_val = $("#scale").val();
+    scale_val = parseInt(scale_val);
+      return [value, (input[value/4]*scale_val) - downOffset]   // 4毫秒計一次
+    });
+
+    dataset.push({
+      label: cName[i],
+      color: "#4798B3",
+      data: data
+    });
+    downOffset += offset;
+  }
+}
 
 // var totalPoint;
 // var channelNum;
