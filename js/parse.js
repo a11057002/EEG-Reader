@@ -1,5 +1,6 @@
 var totalLengthOfGraph;
 var channelName; //2 dim
+var ylabel;
 var data; // after check
 var cName;
 var time;
@@ -68,7 +69,8 @@ function plotSignal() {
         show: true,
         min: lval,
         max: rval,
-        axisLabel: "milli seconds",
+        axisLabel: "seconds",
+        ticks:ylabel
       },
       yaxis: {
         position: "left",
@@ -93,7 +95,7 @@ function plotSignalfromHead(){
   interval_time = $("#xPadding").val();
   interval_time = parseInt(interval_time);
   downOffset = -(offset * channelNum);
-  
+
   scale_val = $("#scale").val();
   scale_val = parseInt(scale_val);
 
@@ -104,6 +106,14 @@ function plotSignalfromHead(){
               "<path d='M 25 5 l 0 13' stroke='black' stroke-width='1.5' fill='none' />");//中間
   lval = 0;
   rval = interval_time;
+  ylabel = [];
+  var ylength = (rval-lval)/10;
+  var ylabel_x = lval;
+  for(var i=0; i<11;i++)
+  {
+    ylabel.push([ylabel_x , ylabel_x/1000]);
+    ylabel_x += ylength;
+  }
   plotSignal();
 }
 
@@ -132,7 +142,7 @@ function nextPage() {
       },
       xaxis: {
         show: true,
-        axisLabel: "milli seconds",
+        axisLabel: "seconds",
         min: lval += interval_time,
         max: rval += interval_time
       },
@@ -169,7 +179,7 @@ function previousPage() {
       },
       xaxis: {
         show: true,
-        axisLabel: "milli seconds",
+        axisLabel: "seconds",
         min: lval -= interval_time,
         max: rval -= interval_time
       },
@@ -249,7 +259,7 @@ function getData(){
 
     Swal.fire({
       title: "EEG sensors",
-      imageUrl: "../static/resources/eeg_33channels.png",
+      imageUrl: "../resources/eeg_33channels.png",
       html: sensorString
     });
   });
