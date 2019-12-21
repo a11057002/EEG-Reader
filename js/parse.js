@@ -10,7 +10,7 @@ var offset = 300;
 var downOffset;
 var interval_time;
 var scale_val;
-var old_scale_val;
+var ratio;
 var lval;
 var rval;
 var sensorString = "";
@@ -229,6 +229,9 @@ function getData(){
       totalLengthOfGraph = time.length*4;
       totalLengthOfGraph = parseInt(totalLengthOfGraph, 10);
       $("#xPadding").val(totalLengthOfGraph);
+      $("#scale").val(parseInt(offset * (channelNum+2) / 33, 10));
+      ratio = $("#scale").val();
+      ratio = parseInt(ratio, 10);
       pushData();
 
       $("#choices").html(""); //避免重複append
@@ -276,7 +279,7 @@ function pushData(){
     data = time.map((value) => {
     scale_val = $("#scale").val();
     scale_val = parseInt(scale_val);
-      return [value, (input[value/4]*scale_val) - downOffset]   // 4毫秒計一次
+      return [value, (input[value/4]*(ratio/scale_val)) - downOffset]   // 4毫秒計一次
     });
 
     dataset.push({
