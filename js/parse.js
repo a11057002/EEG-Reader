@@ -100,7 +100,7 @@ function plotSignalfromHead(){
   scale_val = parseInt(scale_val);
 
   pushData();
-  $("#scale_val").html("&nbsp;scale<br>&nbsp;&nbsp;&nbsp;&nbsp"+scale_val);
+  $("#scale_val").html("&nbsp;scale<br>&nbsp;&nbsp;&nbsp;"+scale_val);
   $("#scale_svg").html("<path d='M 0 5 l 50 0' stroke='black' stroke-width='1.5' fill='none' />"+//上
               "<path d='M 0 18 l 50 0' stroke='black' stroke-width='1.5' fill='none' />"+//下
               "<path d='M 25 5 l 0 13' stroke='black' stroke-width='1.5' fill='none' />");//中間
