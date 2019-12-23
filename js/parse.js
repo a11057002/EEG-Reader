@@ -94,6 +94,7 @@ function plotSignal() {
 function plotSignalfromHead(){
   interval_time = $("#xPadding").val();
   interval_time = parseInt(interval_time);
+  interval_time *= 1000; //second To milisecond
   downOffset = -(offset * channelNum);
 
   scale_val = $("#scale").val();
@@ -228,7 +229,8 @@ function getData(){
       channelNum = cName.length;
       totalLengthOfGraph = time.length*4;
       totalLengthOfGraph = parseInt(totalLengthOfGraph, 10);
-      $("#xPadding").val(totalLengthOfGraph);
+      $("#xPadding").val(totalLengthOfGraph/1000); // /1000 to seconds
+      $("#totalTime").html("Total time:" + totalLengthOfGraph/1000 + "seconds");
       $("#scale").val(parseInt(offset * (channelNum+2) / 33, 10));
       ratio = $("#scale").val();
       ratio = parseInt(ratio, 10);
